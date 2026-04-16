@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수리나무학원 스마트 학습 - Reading Clue2 Unit 05</title>
+    <style>
+        /* 🌳 수리나무학원 전용 컬러 팔레트 */
+        :root {
+            --main-green: #2F855A;
+            --light-green: #48BB78;
+            --bg-color: #F0FDF4;
+            --text-dark: #2D3748;
+            --box-shadow: 0 10px 30px rgba(47, 133, 90, 0.15);
+        }
+
+        body { font-family: 'Pretendard', 'Malgun Gothic', sans-serif; text-align: center; background-color: var(--bg-color); margin: 0; padding: 20px; color: var(--text-dark); }
+        
+        #app-container { max-width: 480px; margin: 0 auto; background: white; border-radius: 24px; box-shadow: var(--box-shadow); overflow: hidden; padding-bottom: 30px;}
+        
+        /* 헤더 스타일 강화 (수리나무학원 강조) */
+        .app-header { background: linear-gradient(135deg, var(--main-green), #276749); color: white; padding: 35px 20px 25px; text-align: center; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(47, 133, 90, 0.4);}
+        .app-header h1 { margin: 0; font-size: 32px; font-weight: 900; letter-spacing: -1.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .app-header p { margin: 10px 0 0 0; font-size: 15px; font-weight: bold; opacity: 0.9; background: rgba(255,255,255,0.2); display: inline-block; padding: 5px 15px; border-radius: 20px;}
+        .logo-icon { font-size: 45px; margin-bottom: 5px; text-shadow: 0 4px 10px rgba(0,0,0,0.2);}
+
+        .nav-container { padding: 0 15px; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; }
+        .menu-btn { flex: 1; min-width: 70px; padding: 12px 10px; cursor: pointer; border: none; border-radius: 12px; background-color: #EDF2F7; color: #4A5568; font-weight: bold; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+        .menu-btn:hover { background-color: #E2E8F0; transform: translateY(-2px); }
+        .menu-btn.active { background-color: var(--main-green); color: white; box-shadow: 0 4px 10px rgba(47, 133, 90, 0.3); }
+        
+        .section { display: none; padding: 0 20px; animation: fadeIn 0.4s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .status-text { font-size: 15px; color: #718096; margin-bottom: 10px; font-weight: 800; background: #EDF2F7; display: inline-block; padding: 5px 15px; border-radius: 20px;}
+        
+        /* 🐉 진화 시스템 UI */
+        .evolution-box { background: white; border-radius: 18px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid #E2E8F0; position: relative; overflow: hidden;}
+        .evo-bg-effect { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(72,187,120,0.1) 0%, rgba(255,255,255,0) 70%); z-index: 0; pointer-events: none;}
+        .evo-content { position: relative; z-index: 1; }
+        .evo-emoji { font-size: 4rem; margin-bottom: 5px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: inline-block;}
+        .evo-text { font-size: 18px; font-weight: 900; color: var(--main-green); margin-bottom: 15px; }
+        .progress-bg { background: #EDF2F7; height: 14px; border-radius: 10px; overflow: hidden; width: 100%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);}
+        .progress-bar { background: linear-gradient(90deg, #48BB78, #2F855A, #3182CE); height: 100%; width: 0%; transition: width 0.6s ease-in-out; border-radius: 10px;}
+
+        /* 단어 테스트 스타일 */
+        .word-box { font-size: 2.2rem; font-weight: 900; color: var(--main-green); margin: 20px 0 30px; letter-spacing: -1px; word-break: keep-all; }
+        #word-options { display: grid; gap: 12px; margin-bottom: 20px;}
+        .option-btn { background: white; border: 2px solid #E2E8F0; padding: 16px; border-radius: 15px; font-size: 16px; cursor: pointer; transition: 0.2s; text-align: left; padding-left: 20px; font-weight: bold; color: var(--text-dark);}
+        .option-btn:hover { border-color: var(--light-green); background: var(--bg-color); }
+        .option-btn.correct { background-color: var(--light-green) !important; color: white !important; border-color: var(--light-green) !important; transform: scale(1.02); }
+        .option-btn.wrong { background-color: #FC8181 !important; color: white !important; border-color: #FC8181 !important; animation: shake 0.4s; }
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+        .start-btn { background: var(--main-green); color: white; border: none; padding: 15px 30px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(47, 133, 90, 0.3); transition: 0.2s; margin-top: 20px;}
+        .start-btn:hover { background: var(--light-green); transform: translateY(-2px);}
+        .score-display { font-size: 3.5rem; font-weight: 900; color: #3182CE; margin: 20px 0; }
+        .score-detail { font-size: 1.2rem; color: #4A5568; font-weight: bold; margin-bottom: 30px; }
+
+        /* 딕테이션 스타일 */
+        .word-block { display: inline-block; background-color: white; margin: 5px; padding: 12px 18px; border: 2px solid #CBD5E0; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; color: var(--text-dark); box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.1s;}
+        .word-block:active { transform: translateY(3px); box-shadow: none; }
+        #answer-area { min-height: 60px; border: 2px dashed var(--main-green); background-color: var(--bg-color); margin-bottom: 20px; padding: 15px; border-radius: 15px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; transition: all 0.3s; }
+        #scrambled-words { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 20px; min-height: 50px;}
+        .korean-meaning { font-size: 18px; color: #C53030; font-weight: bold; margin: 15px 0 25px 0; background-color: #FFF5F5; padding: 15px; border-radius: 12px; word-break: keep-all; border-left: 5px solid #F56565; text-align: left;}
+        .setup-section { margin-bottom: 20px; padding: 15px; background: white; border: 1px solid #E2E8F0; border-radius: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;}
+        input[type="number"] { padding: 8px; font-size: 15px; border: 2px solid #E2E8F0; border-radius: 8px; width: 60px; text-align: center; outline: none;}
+        .setup-section button { padding: 8px 15px; background-color: var(--text-dark); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;}
+
+        /* 기록 스타일 */
+        .history-card { background: white; border: 2px solid #E2E8F0; border-radius: 12px; padding: 15px; margin-bottom: 12px; text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center;}
+        .history-info { display: flex; flex-direction: column; gap: 5px; }
+        .history-date { font-size: 14px; font-weight: bold; color: #718096; }
+        .history-score { font-size: 20px; font-weight: 900; color: var(--main-green); }
+        .stamp-excellent { color: #E53E3E; font-weight: 900; font-size: 18px; transform: rotate(-10deg); border: 3px solid #E53E3E; padding: 4px 10px; border-radius: 10px; opacity: 0.9;}
+        .history-category { background: #EDF2F7; padding: 8px 12px; border-radius: 8px; font-size: 14px; font-weight: bold; margin-bottom: 15px; margin-top: 20px; color: #2D3748; text-align: left; border-left: 4px solid #4A5568;}
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div class="app-header">
+        <div class="logo-icon">🌳</div>
+        <h1>수리나무학원</h1>
+        <p>Kitchen Math 학습 (RC2 Unit05)</p>
+    </div>
+    
+    <div class="nav-container">
+        <button id="nav-word" class="menu-btn active" onclick="showSection('word-section', this)">1. 단어 테스트</button>
+        <button id="nav-dictation" class="menu-btn" onclick="showSection('dictation-section', this)">2. 영작(딕테이션)</button>
+        <button id="nav-history" class="menu-btn" onclick="showSection('history-section', this); renderHistory();">3. 성적 기록</button>
+    </div>
+
+    <div id="word-section" class="section active">
+        <div id="intro-screen">
+            <div style="font-size: 4rem; margin-bottom: 10px;">🥚</div>
+            <h2 style="color: var(--main-green);">전설의 용 키우기!</h2>
+            <p style="font-weight: bold; color: #4A5568;">단어 48문항을 맞춰가며<br>알을 멋진 용으로 진화시켜 보세요.</p>
+            <button class="start-btn" onclick="startWordTest()">테스트 시작하기 🚀</button>
+        </div>
+
+        <div id="quiz-screen" style="display: none;">
+            <div class="evolution-box">
+                <div class="evo-bg-effect"></div>
+                <div class="evo-content">
+                    <div class="evo-emoji" id="word-evo-emoji">🥚</div>
+                    <div class="evo-text" id="word-evo-text">신비한 수리나무 알 (0%)</div>
+                    <div class="progress-bg"><div class="progress-bar" id="word-evo-bar"></div></div>
+                </div>
+            </div>
+
+            <div class="status-text" id="word-status">문제 1 / 48</div>
+            <div id="word-display" class="word-box">Loading...</div>
+            <div id="word-options"></div>
+        </div>
+
+        <div id="result-screen" style="display: none;">
+            <div style="font-size: 5rem; margin-bottom: 10px;" id="result-dragon">🐉✨</div>
+            <h2 style="color: var(--main-green);">테스트 종료!</h2>
+            <div class="score-display" id="final-score">100점</div>
+            <div class="score-detail" id="final-detail">정답: 48 / 48</div>
+            <button class="start-btn" onclick="resetWordTest()">새로운 알 부화하기 🔄</button>
+        </div>
+    </div>
+
+    <div id="dictation-section" class="section">
+        <div class="evolution-box">
+            <div class="evo-bg-effect"></div>
+            <div class="evo-content">
+                <div class="evo-emoji" id="dict-evo-emoji">🥚</div>
+                <div class="evo-text" id="dict-evo-text">신비한 수리나무 알 (0%)</div>
+                <div class="progress-bg"><div class="progress-bar" id="dict-evo-bar"></div></div>
+            </div>
+        </div>
+
+        <div class="setup-section">
+            <strong>문장 이동: </strong> 
+            <input type="number" id="startSenNum" value="1" min="1">
+            <button onclick="jumpToSentence()">GO 🚀</button>
+        </div>
+        <h3 style="color: var(--main-green); margin-bottom: 5px;">듣고 뜻을 보며 단어를 순서대로 터치하세요</h3>
+        <div class="status-text" id="sentence-status">문제 1 / 16</div>
+        <div id="sentence-ko-text" class="korean-meaning">한글 뜻 로딩중...</div>
+        <div id="answer-area"></div>
+        <div id="scrambled-words"></div>
+        <div style="background: #EBF8FF; padding: 10px; border-radius: 10px; margin-top: 15px;">
+            <p style="font-size: 13px; color: #2B6CB0; margin: 0; font-weight: bold;">🎧 원어민 음성이 자동으로 무한 반복 재생됩니다.</p>
+        </div>
+    </div>
+
+    <div id="history-section" class="section">
+        <h3 style="color: var(--main-green); margin-top:0;">🏆 수리나무 명예의 전당</h3>
+        <div id="history-list"></div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // 데이터 셋팅
+    // ==========================================
+    const wordList = [
+        { en: "brother", ko: "남자 형제" }, { en: "younger brother", ko: "남동생" }, { en: "kitchen", ko: "부엌" },
+        { en: "flour", ko: "밀가루" }, { en: "sugar", ko: "설탕" }, { en: "counter", ko: "조리대" },
+        { en: "I am making~", ko: "나는 ~을 만들고 있다" }, { en: "I make", ko: "나는 만든다" }, { en: "I am eating ~", ko: "나는 ~을 먹고 있다" },
+        { en: "answer", ko: "대답하다" }, { en: "answered", ko: "대답했다" }, { en: "confused", ko: "혼란스러운" },
+        { en: "have", ko: "가지고 있다" }, { en: "had", ko: "가지고 있었다" }, { en: "recipe", ko: "조리법" },
+        { en: "internet", ko: "인터넷" }, { en: "say", ko: "말하다" }, { en: "said", ko: "말했다" },
+        { en: "need", ko: "필요하다" }, { en: "needed", ko: "필요했다" }, { en: "two cups of flour", ko: "밀가루 두 컵" },
+        { en: "one cup of sugar", ko: "설탕 한 컵" }, { en: "for", ko: "~을 위해" }, { en: "only", ko: "단지 / 오직" },
+        { en: "for only 10 cookies", ko: "단지 10개의 쿠키를 위한" }, { en: "want", ko: "원하다" }, { en: "wanted", ko: "원했다" },
+        { en: "should", ko: "~해야 한다" }, { en: "What should I do?", ko: "내가 어떻게 해야 할까?" }, { en: "ask", ko: "묻다" },
+        { en: "asked", ko: "물었다" }, { en: "explain", ko: "설명하다" }, { en: "explained", ko: "설명했다" },
+        { en: "simple", ko: "간단한" }, { en: "math", ko: "수학" }, { en: "problem", ko: "문제" },
+        { en: "a simple math problem", ko: "간단한 수학 문제" }, { en: "times", ko: "곱하기" }, { en: "equals", ko: "~와 같다" },
+        { en: "10 times 3 equals 30", ko: "10 곱하기 3은 30이다" }, { en: "so", ko: "그래서" }, { en: "have to", ko: "~해야 한다" },
+        { en: "had to", ko: "~해야 했다" }, { en: "multiply", ko: "곱하다" }, { en: "everything", ko: "모든 것" },
+        { en: "by three", ko: "3으로" }, { en: "instead of", ko: "~대신에" }, { en: "That’s right.", ko: "맞아. / 그것이 옳다." }
+    ];
+
+    const sentenceList = [
+        { en: "Angela's younger brother was in the kitchen.", ko: "안젤라의 남동생은 부엌에 있었다." },
+        { en: "There were eggs, flour, and sugar on the counter.", ko: "조리대 위에는 달걀, 밀가루, 그리고 설탕이 있었다." },
+        { en: "\"What are you doing, Victor?\" asked Angela.", ko: "안젤라가 물었다. \"빅터, 뭐 하고 있니?\"" },
+        { en: "\"I'm making cookies,\" he answered.", ko: "그가 대답했다. \"쿠키를 만들고 있어.\"" },
+        { en: "\"But I'm confused.\"", ko: "\"하지만 헷갈려.\"" },
+        { en: "Victor had a recipe from the Internet.", ko: "빅터는 인터넷에서 찾은 조리법을 가지고 있었다." },
+        { en: "It said he needed three eggs, two cups of flour, and one cup of sugar.", ko: "거기에는 그가 달걀 3개, 밀가루 2컵, 그리고 설탕 1컵이 필요하다고 적혀 있었다." },
+        { en: "But the recipe was for only 10 cookies.", ko: "하지만 그 조리법은 단지 10개의 쿠키를 위한 것이었다." },
+        { en: "Victor wanted to make 30 cookies.", ko: "빅터는 30개의 쿠키를 만들고 싶었다." },
+        { en: "\"What should I do?\" he asked.", ko: "그가 물었다. \"어떻게 해야 하지?\"" },
+        { en: "Angela explained that it was a simple math problem.", ko: "안젤라는 그것이 간단한 수학 문제라고 설명했다." },
+        { en: "Ten times three equals 30.", ko: "10 곱하기 3은 30이야." },
+        { en: "So, he had to multiply everything by three.", ko: "그래서, 그는 모든 것을 3으로 곱해야 했다." },
+        { en: "He needed nine eggs instead of three, and six cups of flour instead of two.", ko: "그는 3개 대신 9개의 달걀이 필요했고, 2컵 대신 6컵의 밀가루가 필요했다." },
+        { en: "\"And three cups of sugar!\" said Victor.", ko: "빅터가 말했다. \"그리고 설탕 3컵!\"" },
+        { en: "\"That's right,\" said Angela.", ko: "안젤라가 말했다. \"맞아.\"" }
+    ];
+
+    // ==========================================
+    // 공통 로직 및 진화 UI
+    // ==========================================
+    function shuffleArray(array) {
+        let newArr = [...array];
+        for (let i = newArr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+        }
+        return newArr;
+    }
+
+    function formatDate(dateObj) {
+        return `${dateObj.getFullYear()}.${String(dateObj.getMonth() + 1).padStart(2, '0')}.${String(dateObj.getDate()).padStart(2, '0')} ${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}`;
+    }
+
+    function getTodayKey() {
+        const today = new Date();
+        return `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+    }
+
+    function showSection(sectionId, btnElement) {
+        stopLooping(); 
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+        if(btnElement) btnElement.classList.add('active');
+        if(sectionId === 'dictation-section') { 
+            isLooping = true; 
+            playAndLoop(); 
+            // 딕테이션 진입 시 현재 인덱스 기준으로 진화상태 업데이트
+            updateEvolutionUI('dict-evo', currentSentenceIdx, sentenceList.length);
+        }
+    }
+
+    // 진화 상태 업데이트 함수
+    function updateEvolutionUI(prefix, current, total) {
+        const ratio = total === 0 ? 0 : current / total;
+        let emoji = '🥚';
+        let stageName = '신비한 수리나무 알';
+
+        if (ratio === 0) { emoji = '🥚'; stageName = '신비한 수리나무 알'; }
+        else if (ratio < 0.25) { emoji = '🐣'; stageName = '부화하는 아기 용'; }
+        else if (ratio < 0.5) { emoji = '🦎'; stageName = '꼬마 드래곤'; }
+        else if (ratio < 0.75) { emoji = '🦖'; stageName = '성장하는 파워 용'; }
+        else if (ratio < 1.0) { emoji = '🐲'; stageName = '비상하는 매직 용'; }
+        else { emoji = '🐉✨'; stageName = '수리나무 마스터 용!!'; }
+
+        const percent = Math.floor(ratio * 100);
+        
+        const emojiEl = document.getElementById(prefix + '-emoji');
+        emojiEl.innerText = emoji;
+        
+        // 이모지 살짝 통통 튀는 애니메이션 적용
+        emojiEl.style.transform = 'scale(1.3)';
+        setTimeout(() => { emojiEl.style.transform = 'scale(1)'; }, 300);
+
+        document.getElementById(prefix + '-text').innerText = `${stageName} (${percent}%)`;
+        document.getElementById(prefix + '-bar').style.width = percent + '%';
+    }
+
+    // ==========================================
+    // 1. 단어 테스트 로직
+    // ==========================================
+    let currentWordTestList = [];
+    let currentWordIdx = 0;
+    let wordCorrectCount = 0;
+    let isWordAnswering = false;
+
+    function startWordTest() {
+        currentWordTestList = shuffleArray(wordList);
+        currentWordIdx = 0;
+        wordCorrectCount = 0;
+        
+        document.getElementById('intro-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'none';
+        document.getElementById('quiz-screen').style.display = 'block';
+        
+        loadWordQuestion();
+    }
+
+    function loadWordQuestion() {
+        isWordAnswering = false;
+        
+        // 진화 상태 업데이트
+        updateEvolutionUI('word-evo', currentWordIdx, currentWordTestList.length);
+
+        const currentQ = currentWordTestList[currentWordIdx];
+        document.getElementById('word-status').innerText = `문제 ${currentWordIdx + 1} / ${currentWordTestList.length}`;
+        document.getElementById('word-display').innerText = currentQ.en;
+        
+        const optionsDiv = document.getElementById('word-options');
+        optionsDiv.innerHTML = '';
+
+        let options = [{ text: currentQ.ko, isCorrect: true }];
+        let distractors = shuffleArray(wordList.filter(w => w.ko !== currentQ.ko));
+        
+        for(let i=0; i<3; i++) {
+            if(distractors[i]) options.push({ text: distractors[i].ko, isCorrect: false });
+        }
+        options = shuffleArray(options);
+
+        options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = `${index + 1}. ${opt.text}`;
+            btn.onclick = () => handleWordAnswer(btn, opt.isCorrect, optionsDiv);
+            optionsDiv.appendChild(btn);
+        });
+    }
+
+    function handleWordAnswer(clickedBtn, isCorrect, optionsContainer) {
+        if (isWordAnswering) return;
+        isWordAnswering = true;
+
+        if (isCorrect) {
+            clickedBtn.classList.add('correct');
+            wordCorrectCount++;
+        } else {
+            clickedBtn.classList.add('wrong');
+            const buttons = optionsContainer.getElementsByClassName('option-btn');
+            for(let btn of buttons) {
+                if(btn.innerText.includes(currentWordTestList[currentWordIdx].ko)) {
+                    btn.classList.add('correct');
+                    break;
+                }
+            }
+        }
+
+        setTimeout(() => {
+            currentWordIdx++;
+            if (currentWordIdx < currentWordTestList.length) {
+                loadWordQuestion();
+            } else {
+                finishWordTest();
+            }
+        }, 800);
+    }
+
+    function finishWordTest() {
+        // 마지막 완료 상태 (100%) 반영
+        updateEvolutionUI('word-evo', currentWordTestList.length, currentWordTestList.length);
+
+        setTimeout(() => {
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+            
+            const total = currentWordTestList.length;
+            const calculatedScore = Math.round((wordCorrectCount / total) * 100);
+            
+            // 점수에 따른 최종 이모지 결과창에 반영
+            const resultDragon = document.getElementById('result-dragon');
+            if (calculatedScore >= 90) resultDragon.innerText = '🐉✨';
+            else if (calculatedScore >= 70) resultDragon.innerText = '🐲';
+            else resultDragon.innerText = '🦖💦';
+
+            document.getElementById('final-score').innerText = `${calculatedScore}점`;
+            document.getElementById('final-score').style.color = calculatedScore >= 90 ? '#3182CE' : (calculatedScore >= 70 ? '#D69E2E' : '#E53E3E');
+            document.getElementById('final-detail').innerText = `정답: ${wordCorrectCount}개 / ${total}문항`;
+            
+            saveWordScore(calculatedScore, wordCorrectCount, total);
+        }, 500); // 100% 진화 모습 잠시 보여주고 결과화면으로
+    }
+
+    function resetWordTest() {
+        document.getElementById('result-screen').style.display = 'none';
+        document.getElementById('intro-screen').style.display = 'block';
+    }
+
+    function saveWordScore(score, correct, total) {
+        let history = JSON.parse(localStorage.getItem('surinamu_word_score_history')) || [];
+        history.unshift({ date: formatDate(new Date()), score: score, correct: correct, total: total });
+        localStorage.setItem('surinamu_word_score_history', JSON.stringify(history));
+    }
+
+    // ==========================================
+    // 2. 영작(딕테이션) 로직
+    // ==========================================
+    let currentSentenceIdx = 0;
+    let isLooping = false;
+    let loopTimeout;
+
+    function playAndLoop() {
+        if(!isLooping || sentenceList.length === 0) return;
+        window.speechSynthesis.cancel(); 
+        const text = sentenceList[currentSentenceIdx].en;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8;
+        utterance.onend = function() { if(isLooping) loopTimeout = setTimeout(playAndLoop, 1000); };
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function stopLooping() {
+        isLooping = false;
+        window.speechSynthesis.cancel();
+        clearTimeout(loopTimeout);
+    }
+
+    function loadDictationSentence() {
+        if(sentenceList.length === 0) return;
+        stopLooping(); 
+        
+        // 딕테이션 진화 상태 업데이트
+        updateEvolutionUI('dict-evo', currentSentenceIdx, sentenceList.length);
+
+        const currentSenObj = sentenceList[currentSentenceIdx];
+        document.getElementById('sentence-status').innerText = `영작 문제 ${currentSentenceIdx + 1} / ${sentenceList.length}`;
+        document.getElementById('sentence-ko-text').innerText = currentSenObj.ko;
+        
+        const answerArea = document.getElementById('answer-area');
+        answerArea.innerHTML = '';
+        answerArea.style.backgroundColor = 'var(--bg-color)';
+        answerArea.style.borderColor = 'var(--main-green)';
+        
+        const scrambledDiv = document.getElementById('scrambled-words');
+        scrambledDiv.innerHTML = '';
+        
+        let words = currentSenObj.en.split(' ');
+        let scrambled = shuffleArray([...words]);
+        
+        scrambled.forEach(word => {
+            const btn = document.createElement('button');
+            btn.className = 'word-block';
+            btn.innerText = word;
+            btn.onclick = function() {
+                if (this.parentElement.id === 'scrambled-words') { answerArea.appendChild(this); } 
+                else { scrambledDiv.appendChild(this); }
+                if (scrambledDiv.children.length === 0) checkDictationSentence();
+            };
+            scrambledDiv.appendChild(btn);
+        });
+        isLooping = true;
+        playAndLoop();
+    }
+    
+    function checkDictationSentence() {
+        const answerArea = document.getElementById('answer-area');
+        const studentSentence = Array.from(answerArea.children).map(btn => btn.innerText).join(' ');
+        if (studentSentence === sentenceList[currentSentenceIdx].en) {
+            answerArea.style.backgroundColor = '#C6F6D5';
+            answerArea.style.borderColor = '#48BB78';
+            recordDictationProgress(); 
+            stopLooping(); 
+            setTimeout(() => { nextDictationSentence(); }, 800); 
+        } else {
+            answerArea.style.backgroundColor = '#FED7D7';
+            setTimeout(() => { answerArea.style.backgroundColor = 'var(--bg-color)'; }, 400);
+        }
+    }
+    
+    function nextDictationSentence() {
+        if (currentSentenceIdx + 1 < sentenceList.length) { 
+            currentSentenceIdx++; 
+            loadDictationSentence(); 
+        } else { 
+            stopLooping(); 
+            // 딕테이션 최종 진화 모습
+            updateEvolutionUI('dict-evo', sentenceList.length, sentenceList.length);
+            setTimeout(() => {
+                alert('수리나무 마스터 달성! 영작 훈련을 모두 완료했습니다! 🐉🎉'); 
+            }, 300);
+        }
+    }
+
+    function jumpToSentence() {
+        const num = parseInt(document.getElementById('startSenNum').value);
+        if (num >= 1 && num <= sentenceList.length) { 
+            currentSentenceIdx = num - 1; 
+            loadDictationSentence(); 
+        } else { 
+            alert(`1에서 ${sentenceList.length} 사이의 번호를 입력하세요.`); 
+        }
+    }
+
+    function recordDictationProgress() {
+        const dateKey = getTodayKey();
+        let history = JSON.parse(localStorage.getItem('surinamu_dictation_history')) || {};
+        if (!history[dateKey]) { history[dateKey] = { dictation: 0 }; }
+        history[dateKey].dictation++;
+        localStorage.setItem('surinamu_dictation_history', JSON.stringify(history));
+    }
+
+    // ==========================================
+    // 3. 기록(History) 렌더링 로직
+    // ==========================================
+    function renderHistory() {
+        const historyList = document.getElementById('history-list');
+        historyList.innerHTML = '';
+        
+        let wordHistory = JSON.parse(localStorage.getItem('surinamu_word_score_history')) || [];
+        let dictHistory = JSON.parse(localStorage.getItem('surinamu_dictation_history')) || {};
+
+        // 단어 테스트 기록 렌더링
+        const wordTitle = document.createElement('div');
+        wordTitle.className = 'history-category';
+        wordTitle.innerHTML = '📝 수리나무 단어 100점 테스트';
+        historyList.appendChild(wordTitle);
+
+        if(wordHistory.length === 0) {
+            historyList.innerHTML += '<p style="color:#A0AEC0; font-size:14px;">단어 테스트 응시 기록이 없습니다.</p>';
+        } else {
+            wordHistory.slice(0, 5).forEach(item => {
+                let stamp = item.score >= 90 ? '<div class="stamp-excellent">마스터 용! 🐉</div>' : ''; 
+                const card = document.createElement('div');
+                card.className = 'history-card';
+                card.innerHTML = `
+                    <div class="history-info">
+                        <span class="history-date">${item.date}</span>
+                        <span class="history-score">${item.score}점 <span style="font-size:14px; color:#A0AEC0;">(${item.correct}/${item.total})</span></span>
+                    </div>
+                    ${stamp}
+                `;
+                historyList.appendChild(card);
+            });
+        }
+
+        // 딕테이션 기록 렌더링
+        const dictTitle = document.createElement('div');
+        dictTitle.className = 'history-category';
+        dictTitle.innerHTML = '🎧 수리나무 영작(딕테이션) 달성도';
+        historyList.appendChild(dictTitle);
+
+        const dictDates = Object.keys(dictHistory).sort((a, b) => new Date(b) - new Date(a));
+        
+        if(dictDates.length === 0) {
+            historyList.innerHTML += '<p style="color:#A0AEC0; font-size:14px;">영작 훈련 기록이 없습니다.</p>';
+        } else {
+            dictDates.slice(0, 5).forEach(date => {
+                const data = dictHistory[date];
+                let stamp = data.dictation >= 10 ? '<span class="stamp-excellent" style="font-size:14px;">멋진 진화! 🐉</span>' : ''; 
+                const displayDate = date.replace(/-/g, '. ');
+                
+                const card = document.createElement('div');
+                card.className = 'history-card';
+                card.innerHTML = `
+                    <div class="history-info">
+                        <span class="history-date">${displayDate}</span>
+                        <span class="history-score">${data.dictation}문장 <span style="font-size:14px; color:#A0AEC0;">성공</span></span>
+                    </div>
+                    ${stamp}
+                `;
+                historyList.appendChild(card);
+            });
+        }
+    }
+
+    // 초기화
+    window.onload = function() {
+        // 앱 시작시 딕테이션 데이터를 초기 로딩만 해둠 (화면은 단어테스트 대기 화면)
+        if(sentenceList.length > 0) {
+            document.getElementById('sentence-status').innerText = `문제 1 / ${sentenceList.length}`;
+            document.getElementById('sentence-ko-text').innerText = sentenceList[0].ko;
+            updateEvolutionUI('dict-evo', 0, sentenceList.length);
+        }
+    };
+</script>
+
+</body>
+</html>
